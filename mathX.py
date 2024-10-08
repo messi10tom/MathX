@@ -3,6 +3,7 @@ from IPython.display import display, Latex
 
 tokenizer = AutoTokenizer.from_pretrained("MESSItom/math-Llama-3.2-1B")
 model = AutoModelForCausalLM.from_pretrained("MESSItom/math-Llama-3.2-1B")
+tokenizer.pad_token = tokenizer.eos_token
 
 alpaca_prompt = """Below is a Maths Question. Write an answer that appropriately completes the request.
 
