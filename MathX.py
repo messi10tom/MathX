@@ -1,14 +1,6 @@
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from peft import PeftModel 
 
-base_model = "meta-llama/Llama-3.2-1B"
-adapter_model = "MESSItom/mathX-Llama-3.2-1B"
-
-model = AutoModelForCausalLM.from_pretrained(base_model)
-model = PeftModel.from_pretrained(model, adapter_model)
-tokenizer = AutoTokenizer.from_pretrained(adapter_model)
-
-
 
 alpaca_prompt = """Below is a Maths Question. Write an answer that appropriately completes the request.
 
@@ -18,12 +10,23 @@ alpaca_prompt = """Below is a Maths Question. Write an answer that appropriately
 ### Answer:
 """
 
-def generate_answer(sample: str, device,
+def get_model(device):
+    base_model = "meta-llama/Llama-3.2-1B"
+    adapter_model = "MESSItom/mathX-Llama-3.2-1B"
+
+    model = AutoModelForCausalLM.from_pretrained(base_model)
+    model = PeftModel.from_pretrained(model, adapter_model).to(device=device)
+    tokenizer = AutoTokenizer.from_pretrained(adapter_model)
+
+    return model, tokenizer
+
+def generate_answer(model,
+                    tokenizer,
+                    sample: str, 
                     max_new_tokens: int = 500):
-    
-    model = model.to(device=device)
 
     text = alpaca_prompt.format(sample)
+    device = model.device
     model_in = tokenizer(text, return_tensors="pt", truncation=True).to(device)
 
     generation_output = model.generate(**model_in,
