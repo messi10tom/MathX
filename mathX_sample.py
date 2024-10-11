@@ -27,7 +27,7 @@ text = alpaca_prompt.format(sample)
 device = model.device
 model_in = tokenizer(text, return_tensors="pt", truncation=True).to(device)
 generation_output = model.generate(**model_in,
-                                  max_new_tokens=200,
+                                  max_new_tokens=500,
                                   temperature=0.7,
                                   eos_token_id=tokenizer.eos_token_id)
 
